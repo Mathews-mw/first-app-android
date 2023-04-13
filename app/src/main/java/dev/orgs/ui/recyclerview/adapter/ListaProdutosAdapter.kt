@@ -1,26 +1,28 @@
 package dev.orgs.ui.recyclerview.adapter
 
+import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.content.Context
 import android.widget.TextView
-import android.view.LayoutInflater
 import androidx.recyclerview.widget.RecyclerView
-
 import dev.orgs.R
 import dev.orgs.model.Produto
 
-class ListaProdutosAdapter( private val context: Context, private val produtos: List<Produto>): RecyclerView.Adapter<ListaProdutosAdapter.ViewHolder>() {
+class ListaProdutosAdapter(private val context: Context, produtos: List<Produto>) :
+    RecyclerView.Adapter<ListaProdutosAdapter.ViewHolder>() {
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    private val produtos = produtos.toMutableList();
+
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun vincula(produto: Produto) {
-            val nome = itemView.findViewById<TextView>(R.id.nome);
+            val nome = itemView.findViewById<TextView>(R.id.produto_item_nome);
             nome.text = produto.nome;
 
-            val descricao = itemView.findViewById<TextView>(R.id.descricao);
+            val descricao = itemView.findViewById<TextView>(R.id.produto_item_descricao);
             descricao.text = produto.descricao;
 
-            val valor = itemView.findViewById<TextView>(R.id.valor);
+            val valor = itemView.findViewById<TextView>(R.id.produto_item_valor);
             valor.text = produto.valor.toPlainString();
         }
     }
@@ -29,7 +31,7 @@ class ListaProdutosAdapter( private val context: Context, private val produtos: 
         val inflater = LayoutInflater.from(context);
         val view = inflater.inflate(R.layout.produto_item, parent, false);
 
-        return  ViewHolder(view);
+        return ViewHolder(view);
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -38,4 +40,9 @@ class ListaProdutosAdapter( private val context: Context, private val produtos: 
     }
 
     override fun getItemCount(): Int = produtos.size;
+    fun atualiza(produtos: List<Produto>) {
+        this.produtos.clear();
+        this.produtos.addAll(produtos);
+        notifyDataSetChanged();
+    }
 }
