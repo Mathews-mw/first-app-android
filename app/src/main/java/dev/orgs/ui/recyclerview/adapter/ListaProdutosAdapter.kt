@@ -4,34 +4,52 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import dev.orgs.R
+import dev.orgs.databinding.ProdutoItemBinding
+import dev.orgs.extensions.tentaCarregarImagem
 import dev.orgs.model.Produto
+import java.text.NumberFormat
+import java.util.*
 
 class ListaProdutosAdapter(private val context: Context, produtos: List<Produto>) :
     RecyclerView.Adapter<ListaProdutosAdapter.ViewHolder>() {
 
     private val produtos = produtos.toMutableList();
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(private val biding: ProdutoItemBinding) :
+        RecyclerView.ViewHolder(biding.root) {
         fun vincula(produto: Produto) {
-            val nome = itemView.findViewById<TextView>(R.id.produto_item_nome);
+            val nome = biding.produtoItemNome;
             nome.text = produto.nome;
 
-            val descricao = itemView.findViewById<TextView>(R.id.produto_item_descricao);
+            val descricao = biding.produtoItemDescricao;
             descricao.text = produto.descricao;
 
-            val valor = itemView.findViewById<TextView>(R.id.produto_item_valor);
-            valor.text = produto.valor.toPlainString();
+            val valor = biding.produtoItemValor;
+            val currencyInstance = NumberFormat.getCurrencyInstance(Locale("pt", "br"));
+            val valorFormatted = currencyInstance.format(produto.valor);
+
+            valor.text = valorFormatted;
+
+            val visibilidade = if (produto.imagem != null) {
+                View.VISIBLE;
+            } else {
+                View.GONE;
+            }
+
+            biding.imageView.visibility = visibilidade;
+
+            biding.imageView.tentaCarregarImagem(produto.imagem);
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(context);
-        val view = inflater.inflate(R.layout.produto_item, parent, false);
+        val biding = ProdutoItemBinding.inflate(inflater, parent, false);
 
-        return ViewHolder(view);
+        return ViewHolder(biding);
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
